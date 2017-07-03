@@ -16,3 +16,13 @@ pip install -r requirements.txt
 
 # TODO
 1. Balance x,y targets (Ric)
+
+
+
+# AWS
+
+## AMIs
+
+### AMI ID Deep Learning AMI Amazon Linux - 2.2_Jun2017 (ami-df0a1ab9)
+1. Crear un virtualenv, numpy no instala.
+1. Paquetes globales, instalar seaborn pero luego no se puede importar.
