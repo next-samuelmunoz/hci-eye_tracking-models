@@ -1,3 +1,4 @@
+dlib==19.4.0
 ipython==6.1.0
 jupyter==1.0.0
 numpy==1.13.0
