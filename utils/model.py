@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import utils_data
 
 import numpy as np
 import tensorflow as tf
+
+from .data_model import get_batch
 
 
 class Model:
@@ -71,7 +72,7 @@ class Model:
             for epoch in range(epochs):
                 print("Epoch: {} of {}".format(epoch+1, epochs))
                 losses_train = []
-                for b_data, b_imgs_left, b_imgs_right in utils_data.get_batch(train_data, train_imgs_left, train_imgs_right, batch_size):
+                for b_data, b_imgs_left, b_imgs_right in get_batch(train_data, train_imgs_left, train_imgs_right, batch_size):
                     steps += 1
                     self.sess.run(optimizer, feed_dict={
                         self.t_features: b_data[self.FEATURES],
@@ -143,8 +144,15 @@ class Model:
 
     def predict(self, data, imgs_left, imgs_right):
         return self.sess.run(self.model, {
-            self.t_features: data[self.FEATURES],
+            self.t_features: data,
             self.t_imgs_left: imgs_left,
             self.t_imgs_right: imgs_right,
             self.t_keep_prob: 1.0
         })
+
+    def predict_record(self, record, img_left, img_right):
+        return tuple(self.predict(
+            data=np.array([[record[x] for x in self.FEATURES]]),
+            imgs_left=img_left.reshape(1, *img_left.shape),
+            imgs_right=img_right.reshape(1, *img_right.shape)
+        )[0])
