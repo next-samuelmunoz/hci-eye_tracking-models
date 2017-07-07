@@ -1,80 +1,76 @@
 # -*- coding: utf-8 -*-
-
-import numpy as np
-import pandas as pd
-import sklearn.model_selection
+"""Utilities to deal with generated pictures.
+"""
 
 
-def load(file_data, file_imgs_left, file_imgs_right): # TODO move params
-    """Load preprocessed data from files.
-    Returns
-    -------
-    _ : pandas DataFrame
-    _ : images left array
-    _ : images right array
-    """
-    return(
-        pd.read_csv(file_data),
-        np.load(file_imgs_left+".npy"),
-        np.load(file_imgs_right+".npy")
-    )
+import os
+import time
+import uuid
 
 
-def split(data, imgs_left, imgs_right, train_size, validation_size, random_state=42):
-    (  # Train - Test
-        train_data, test_data,
-        train_imgs_left, test_imgs_left,
-        train_imgs_right, test_imgs_right
-    ) = sklearn.model_selection.train_test_split(
-        data, imgs_left, imgs_right,
-        train_size=train_size,
-        random_state=22
-    )
-    assert(len(train_data)==len(train_imgs_left)==len(train_imgs_right))
-    assert(len(test_data)==len(test_imgs_left)==len(test_imgs_right))
-    # Train - validation
-    (
-        train_data, validation_data,
-        train_imgs_left, validation_imgs_left,
-        train_imgs_right, validation_imgs_right
-    ) = sklearn.model_selection.train_test_split(
-        train_data, train_imgs_left, train_imgs_right,
-        train_size=train_size,
-        random_state=22
-    )
-    assert(len(train_data)==len(train_imgs_left)==len(train_imgs_right))
-    assert(len(validation_data)==len(validation_imgs_left)==len(validation_imgs_right))
-    return(
-        (train_data, train_imgs_left, train_imgs_right),
-        (validation_data, validation_imgs_left, validation_imgs_right),
-        (test_data, test_imgs_left, test_imgs_right)
-    )
+class Data(object):
 
-
-def get_batch(data, imgs_left, imgs_right, batch_size):
-    """Get a batch
-
-    Parameters
-    ----------
-    data: pandas DataFrame
-    imgs_left: left-eye images array
-    imgs_right: right-eye images array
-    batch_size: int
-
-    Returns
-    -------
-    _ : np.array
-    _ : np.array
-    _ : np.array
-    """
-    index = np.arange(len(data))
-    np.random.shuffle(index)  # Stochastic order
-    data_random = data.iloc[index]
-    imgs_left_random = imgs_left[index]
-    imgs_right_random = imgs_right[index]
-    for i in range(0, len(data), batch_size):
-        yield(
-            data_random[i:i+batch_size],
-            imgs_left_random[i:i+batch_size],
-            imgs_right_random[i:i+batch_size]
+    def __init__(self, raw_data_path,
+        screen_width='', screen_height='', screen_diagonal='',
+        camera_position='', glasses=False
+    ):
+        """Constructor
+        """
+        self.raw_data_path = raw_data_path
+        glasses_str = 'glasses-yes' if glasses else 'glasses-no'
+        self.config_string = "{}_{}_{}_{}_{}". format(
+            screen_width, screen_height, screen_diagonal, camera_position,
+            glasses_str
         )
+        self.game_id = None
+        self.game_path = None
+
+
+    def new_game(self):
+        """Generate a new folder this game data.
+        """
+        self.game_id = uuid.uuid4()
+        dir_name = "{}_{}".format(self.game_id, self.config_string)
+        self.game_path = os.path.join(self.raw_data_path, dir_name)
+        os.makedirs(self.game_path)
+
+
+    def create_datum(self, x, y, score):
+        """Generate a suitable path for the webcam image.
+        """
+        return os.path.join(
+            self.game_path,
+            "{epoch}_{x}_{y}_{score}.jpg".format(
+                epoch=int(time.time()),
+                x=x,
+                y=y,
+                score=score
+            )
+        )
+
+
+    def iterate(self):
+        """Iterate over the generated pictures.
+
+        TODO return iterator (picture path, x, y, time, screen params, cam params)
+        """
+        for directory,subdirs,files in os.walk(self.raw_data_path):
+            if files:
+                constants = dict(zip(
+                    ['game_id','screen_width','screen_height','screen_diagonal','camera_position','glasses'],
+                    os.path.basename(directory).split('_')
+                ))
+                if constants['glasses'] == 'glasses-yes':
+                    constants['glasses'] = True
+                else:
+                    constants['glasses'] = False
+                for f in files:
+                    retval = dict(zip(
+                        ['timestamp', 'x', 'y', 'score'],
+                        os.path.splitext(f)[0].split('_')
+                    ))
+                    retval['img_path'] = os.path.join(directory, f)
+                    retval.update(constants)
+                    for k in ['timestamp', 'x', 'y', 'score','screen_width','screen_height','screen_diagonal']:
+                        retval[k] = int(retval[k])
+                    yield retval
