@@ -11,7 +11,7 @@ from skimage.util import random_noise
 from skimage.exposure import equalize_hist
 
 
-def data_augmentation(img, transformations=[]):
+def data_augmentation(img, transformations=[], mirrored=False):
     """Iterate over transformations and return the transformed image.
 
     Parameters
@@ -20,23 +20,24 @@ def data_augmentation(img, transformations=[]):
         Opened image with skimage.io.imread()
     transformations: function(img)
         Function to augment the image.
+    mirrored: bool
+        If img has suffered a mirror transformation.
 
     Returns
     -------
     img: generator of (transformed image, is mirrored).
     """
-    i_mirror = transformations.index(mirror)
-    for sequence in product([0,1], repeat=len(transformations)):
-        transformation = [  # List of transformations to use
-            t
-            for t,use in zip(transformations, sequence)
-            if use==1
-        ]
-        t_img = img.copy()
-        for func in transformation:  # Apply transformations
-            t_img = func(t_img)
-        is_mirrored = sequence[i_mirror]==1
-        yield (t_img, is_mirrored)
+    if transformations==[]:  # Base case
+        yield(img, mirrored)
+    else:  # Apply first transformation
+        t_apply, *t_list = transformations
+        is_mirrored = mirrored or t_apply==mirror
+        yield from data_augmentation(img, t_list, mirrored)
+        yield from data_augmentation(
+            t_apply(img),
+            t_list,
+            is_mirrored
+        )
 
 
 #
@@ -46,7 +47,7 @@ def data_augmentation(img, transformations=[]):
 def mirror(img):
     """Vertical symmetry
     """
-    return np.fliplr(img)
+    return np.fliplr(img.copy())
 
 
 def bilateral(img):
@@ -54,7 +55,7 @@ def bilateral(img):
     """
     return skimage.util.img_as_ubyte(
         denoise_bilateral(img, sigma_spatial=2, multichannel=True),
-        force_copy=False
+        force_copy=True
     )
 
 def noise(img):
@@ -62,7 +63,7 @@ def noise(img):
     """
     return skimage.util.img_as_ubyte(
         random_noise(img, mode='gaussian', var=0.01),
-        force_copy=False
+        force_copy=True
     )
 
 def equalize(img):
@@ -70,5 +71,5 @@ def equalize(img):
     """
     return skimage.util.img_as_ubyte(
         equalize_hist(img, nbins=256, mask=None),
-        force_copy=False
+        force_copy=True
     )

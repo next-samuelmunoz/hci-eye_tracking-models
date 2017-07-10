@@ -70,9 +70,5 @@ if __name__=="__main__":
                 except Exception as e:
                     print("[WARNING] Exception: {}, Image: {}".format(e, img_path))
                     print(mirrored)
-                    print(type(img))
-                    print(img)
-                    traceback.print_exc()
-
                 i_transform += 1
             i+=1

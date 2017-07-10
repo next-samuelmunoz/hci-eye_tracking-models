@@ -11,10 +11,35 @@ SCREEN_WIDTH = 1366
 SCREEN_HEIGHT = 768
 
 
-# Webam image
-
+# Webcam
 WEBCAM_WIDTH = 1280
 WEBCAM_HEIGHT = 720
+WEBCAM_DEVICE = "/dev/video0"
+"""
+-NOT USED-
+Position of the camera respect to the screen.
+Format is XX where X can be:
+T: top
+B: bottom
+C: center
+L: left
+R: right
+"""
+WEBCAM_POSITION = 'TC'
+
+
+#
+### game01
+#
+
+# IMAGES
+IMG_BACKGROUND = 'img/game01/bg-sky.jpg'
+IMG_TARGET = 'img/game01/target01.png'
+
+# OTHER
+TIME_GAME = 60  # Seconds
+FAILS = 5  # Hits a user can fail
+RADIUS = 75.0  # Radius of the target, centered in the image
 
 
 
