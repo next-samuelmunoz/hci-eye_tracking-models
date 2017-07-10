@@ -100,7 +100,7 @@ class Model:
 
                         }, session=self.sess)
                         print("\tTrain VS Validation: {} {}".format(train_loss, validation_loss))
-                self.model_save(self.sess, self.model_name+"."+str(epoch).zfill(4))  # Save after each epoch
+                #self.model_save(self.sess, self.model_name+"."+str(epoch).zfill(4))  # Save after each epoch
                 validation_loss = self.loss.eval({
                     self.t_features: validation_data[self.FEATURES],
                     self.t_imgs_left: validation_imgs_left,
