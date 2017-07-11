@@ -19,7 +19,7 @@ def get_img_id(game_id, timestamp):
 
 predictor = Predictor(
     path_dlib_model=config.PATH_DLIB,
-    model_name='baseline-02',
+    model_name='CRD-02',
     screen_width=config.SCREEN_WIDTH,
     screen_height=config.SCREEN_HEIGHT,
     webcam_width=config.WEBCAM_WIDTH,
