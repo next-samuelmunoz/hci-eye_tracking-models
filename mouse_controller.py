@@ -2,6 +2,8 @@
 
 from time import sleep
 
+import numpy as np
+from PIL import Image
 import pyautogui
 import pygame
 from pygame.locals import *
@@ -9,17 +11,24 @@ from pygame.locals import *
 
 import config
 from utils.predictor import Predictor
-from utils.webcam_pygame import Webcam
+from utils.webcam_pyv4l2Camera import Webcam
+# from PyV4L2Camera.camera import Camera
+
 
 
 
 if __name__=="__main__":
+    import os
+    os.nice(10)
+    screen = pygame.display.set_mode(
+        (320, 240)
+    )
+
     webcam = Webcam(
         config.WEBCAM_DEVICE,
         config.WEBCAM_WIDTH,
         config.WEBCAM_HEIGHT
     )
-    sleep(3)
     predictor = Predictor(
         path_dlib_model=config.PATH_DLIB,
         model_name='CRD-02',
@@ -30,14 +39,33 @@ if __name__=="__main__":
         threshold_face_width=config.THRESHOLD_FACE_WIDTH
     )
 
-    while True:
+    pygame.init()
+    flag_exit = False
+    while not flag_exit:
         try:
+            print("Get img")
             img = webcam.get_img()
-            x,y = predictor.predict(
-                pygame.surfarray.array3d(img).swapaxes(0,1)
+            print("img!")
+            # Print Image
+            s = pygame.transform.scale(
+                pygame.image.fromstring(img.tobytes(), img.size, img.mode),
+                (320,240)
             )
-            pyautogui.moveTo(x, y, duration=0.25)
+            screen.blit(s,(0,0))
+            pygame.display.update()
+            # Predict postion
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    flag_exit = True
+
+            print("predict")
+            x,y = predictor.predict(
+                np.asarray(img).copy()
+            )
             print(x,y)
+            # Move mouse
+            pyautogui.moveTo(x, y, duration=0.25)
         except Exception as e:
             print(e)
     webcam.close()
+    pygame.display.quit()
