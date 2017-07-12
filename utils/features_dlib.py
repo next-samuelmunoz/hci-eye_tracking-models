@@ -14,20 +14,36 @@ import csv
 import os
 import dlib
 from skimage import io
+# import skimage.color
+import skimage.transform
 
 
 class FeaturesDlib(object):
-    def __init__(self, predictor_path ):
+    def __init__(self, predictor_path, scale_factor=0.5 ):
+        self.scale_factor = scale_factor  # downsample image on hog face detector
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor(predictor_path)
 
 
     def extract_features(self, img, threshold_face_width):
         retval = None
-        faces = self.detector(img, 1)
+        print("Face detection")
+        # img_scaled = skimage.transform.rescale(img, self.scale_factor)
+        print(img.shape)
+        img_scaled = img
+        faces = self.detector(img_scaled, 0)
         if faces:
-            biggest_face = max(faces,key=lambda x:x.area())
+            bfs = max(faces,key=lambda x:x.area())
+            # biggest_face = dlib.dlib.rectangle(
+            #     bfs.left()/self.scale_factor,
+            #     bfs.top()/self.scale_factor,
+            #     bfs.right()/self.scale_factor,
+            #     bfs.bottom()/self.scale_factor
+            # )
+            biggest_face = bfs
+            print("Landmarks")
             landmarks = self.predictor(img, biggest_face)
+            print("End detection")
             if landmarks:
                 if biggest_face.width()>=threshold_face_width:
                     retval = {

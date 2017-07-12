@@ -1,6 +1,6 @@
 
 
-from time import sleep
+import time
 
 import numpy as np
 from PIL import Image
@@ -12,60 +12,66 @@ from pygame.locals import *
 import config
 from utils.predictor import Predictor
 from utils.webcam_pyv4l2Camera import Webcam
-# from PyV4L2Camera.camera import Camera
 
+
+DEBUG = False
 
 
 
 if __name__=="__main__":
     import os
     os.nice(10)
-    screen = pygame.display.set_mode(
-        (320, 240)
-    )
-
-    webcam = Webcam(
-        config.WEBCAM_DEVICE,
-        config.WEBCAM_WIDTH,
-        config.WEBCAM_HEIGHT
-    )
     predictor = Predictor(
         path_dlib_model=config.PATH_DLIB,
-        model_name='CRD-02',
+        # model_name='CRD-02',
+        model_name='baseline-02',
+        # model_name='cnn_simple-09',
+        # model_name='cnn-04',
+        # model_name='cnn_maxpooling-02',
         screen_width=config.SCREEN_WIDTH,
         screen_height=config.SCREEN_HEIGHT,
         webcam_width=config.WEBCAM_WIDTH,
         webcam_height=config.WEBCAM_HEIGHT,
         threshold_face_width=config.THRESHOLD_FACE_WIDTH
     )
-
-    pygame.init()
+    webcam = Webcam(
+        config.WEBCAM_DEVICE,
+        config.WEBCAM_WIDTH,
+        config.WEBCAM_HEIGHT
+    )
+    if DEBUG:
+        pygame.init()
+        screen = pygame.display.set_mode(
+            (320, 240)
+        )
     flag_exit = False
     while not flag_exit:
         try:
+            tstamp = time.time()
             print("Get img")
             img = webcam.get_img()
             print("img!")
-            # Print Image
-            s = pygame.transform.scale(
-                pygame.image.fromstring(img.tobytes(), img.size, img.mode),
-                (320,240)
-            )
-            screen.blit(s,(0,0))
-            pygame.display.update()
+            if DEBUG:
+                s = pygame.transform.scale(
+                    pygame.image.fromstring(img.tobytes(), img.size, img.mode),
+                    (320,240)
+                )
+                screen.blit(s,(0,0))
+                pygame.display.update()
+                for event in pygame.event.get():
+                    if event.type == QUIT:
+                        flag_exit = True
             # Predict postion
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    flag_exit = True
-
             print("predict")
             x,y = predictor.predict(
-                np.asarray(img).copy()
+                np.asarray(img.convert('L')).copy()  # To grayscale
             )
             print(x,y)
             # Move mouse
-            pyautogui.moveTo(x, y, duration=0.25)
+            pyautogui.moveTo(x, y, duration=0.1)
+            print("end loop {}sg".format(time.time()-tstamp))
         except Exception as e:
             print(e)
     webcam.close()
-    pygame.display.quit()
+    if DEBUG:
+        pygame.display.quit()

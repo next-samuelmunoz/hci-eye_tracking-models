@@ -7,7 +7,7 @@
 #
 
 # Space where de user is looking at
-SCREEN_WIDTH = 1366
+SCREEN_WIDTH = 1368
 SCREEN_HEIGHT = 768
 
 
