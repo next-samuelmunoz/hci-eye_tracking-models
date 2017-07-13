@@ -19,7 +19,7 @@ def get_img_id(game_id, timestamp):
 
 predictor = Predictor(
     path_dlib_model=config.PATH_DLIB,
-    model_name='CRD-02',
+    model_name='baseline-06',
     screen_width=config.SCREEN_WIDTH,
     screen_height=config.SCREEN_HEIGHT,
     webcam_width=config.WEBCAM_WIDTH,
@@ -54,7 +54,7 @@ def draw_features01(img, features):
 
 def loop(data_list):
     pygame.init()
-    i_data = 0
+    i_data = 1000
     exit = 0
     flag_dot = False
     flag_landmarks = False
