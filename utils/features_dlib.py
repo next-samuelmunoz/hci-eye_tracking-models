@@ -27,7 +27,7 @@ class FeaturesDlib(object):
 
     def extract_features(self, img, threshold_face_width):
         retval = None
-        print("Face detection")
+        # print("Face detection")
         # img_scaled = skimage.transform.rescale(img, self.scale_factor)
         print(img.shape)
         img_scaled = img
@@ -41,9 +41,7 @@ class FeaturesDlib(object):
             #     bfs.bottom()/self.scale_factor
             # )
             biggest_face = bfs
-            print("Landmarks")
             landmarks = self.predictor(img, biggest_face)
-            print("End detection")
             if landmarks:
                 if biggest_face.width()>=threshold_face_width:
                     retval = {
