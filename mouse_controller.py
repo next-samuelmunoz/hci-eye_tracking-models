@@ -39,7 +39,7 @@ if __name__=="__main__":
             radius= config.SCREEN_HEIGHT*0.3,
             screen_width=config.SCREEN_WIDTH,
             screen_height=config.SCREEN_HEIGHT,
-            fire_sg=0.7,
+            fire_sg=0.5,
             duration=0.7
         )
     else:
