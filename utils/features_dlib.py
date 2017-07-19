@@ -27,20 +27,9 @@ class FeaturesDlib(object):
 
     def extract_features(self, img, threshold_face_width):
         retval = None
-        # print("Face detection")
-        # img_scaled = skimage.transform.rescale(img, self.scale_factor)
-        print(img.shape)
-        img_scaled = img
-        faces = self.detector(img_scaled, 0)
+        faces = self.detector(img, 0)
         if faces:
-            bfs = max(faces,key=lambda x:x.area())
-            # biggest_face = dlib.dlib.rectangle(
-            #     bfs.left()/self.scale_factor,
-            #     bfs.top()/self.scale_factor,
-            #     bfs.right()/self.scale_factor,
-            #     bfs.bottom()/self.scale_factor
-            # )
-            biggest_face = bfs
+            biggest_face = max(faces,key=lambda x:x.area())
             landmarks = self.predictor(img, biggest_face)
             if landmarks:
                 if biggest_face.width()>=threshold_face_width:
