@@ -19,7 +19,7 @@ class WebcamThread(Thread):
         self.width, self.height = self._cam.width, self._cam.height
         self.running = True
         self.img = None
-        self.t_wait = 1.0/30  # Webcam operates at 30FPS
+        self.t_wait = 1.0/60  # Webcam operates at 30FPS
         super().__init__()
 
 
