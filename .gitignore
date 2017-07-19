@@ -1,5 +1,12 @@
 *.pyc
-data
 venv3
 .ipynb_checkpoints
 __pycache__
+
+# Datasets
+
+data/raw
+data/features01_cognitive
+data/features01_dlib
+data/features01_dlib_augmented
+data/features01_dlib_augmented_norm
