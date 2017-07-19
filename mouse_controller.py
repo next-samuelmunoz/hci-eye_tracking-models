@@ -42,7 +42,7 @@ if __name__=="__main__":
             fire_sg=0.5,
             duration=0.7
         )
-    if args.behavior=="scroll":
+    elif args.behavior=="scroll":
         mouse = utils.mouse_behavior.Scroll(
             border= int(config.SCREEN_HEIGHT/3),
             screen_height=config.SCREEN_HEIGHT,
