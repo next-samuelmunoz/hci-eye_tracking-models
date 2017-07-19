@@ -9,6 +9,7 @@
 # Space where de user is looking at
 SCREEN_WIDTH = 1368
 SCREEN_HEIGHT = 768
+SCREEN_DIAGONAL =  14  # Not used
 
 
 # Webcam
@@ -33,13 +34,13 @@ WEBCAM_POSITION = 'TC'
 #
 
 # IMAGES
-IMG_BACKGROUND = 'img/game01/bg-sky.jpg'
-IMG_TARGET = 'img/game01/target01.png'
+GAME_IMG_BACKGROUND = 'img/game01/bg-sky.jpg'
+GAME_IMG_TARGET = 'img/game01/target01.png'
 
 # OTHER
-TIME_GAME = 60  # Seconds
-FAILS = 5  # Hits a user can fail
-RADIUS = 75.0  # Radius of the target, centered in the image
+GAME_TIME = 60  # Seconds
+GAME_FAILS = 5  # Hits a user can fail
+GAME_RADIUS = 75.0  # Radius of the target, centered in the image
 
 
 
@@ -48,7 +49,7 @@ RADIUS = 75.0  # Radius of the target, centered in the image
 #
 
 PATH_DLIB = 'data/shape_predictor_68_face_landmarks.dat'
-
+THRESHOLD_FACE_WIDTH = 200  # Minimum face width
 
 
 #
@@ -58,14 +59,11 @@ PATH_DLIB = 'data/shape_predictor_68_face_landmarks.dat'
 PATH_DATA_RAW = 'data/raw'
 
 
-
 #
 ### DATASET: features01
 #
 
 FEATURES01_EYES_SIZE = (30,20)  # Eye img shape
-THRESHOLD_FACE_WIDTH = 200  # Minimum face width
-
 
 # features01_cognitive
 PATH_DATA_FEATURES01_COGNITIVE = 'data/features01_cognitive/'

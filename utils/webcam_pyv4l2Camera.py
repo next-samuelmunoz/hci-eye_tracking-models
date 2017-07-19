@@ -35,9 +35,8 @@ class WebcamThread(Thread):
     def capture(self, path_file):
         '''Capture image into a file
         '''
-        pass
-        # TODO
-        # pygame.image.save(self.img, path_file)
+        image = self.get_img()
+        image.save(path_file)
 
 
     def get_img(self):
