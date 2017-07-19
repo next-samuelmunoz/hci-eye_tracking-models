@@ -21,7 +21,7 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-b","--behavior",
         help="Set the mouse behavior",
-        choices=['move', 'drag2center'],
+        choices=['move', 'drag2center', 'scroll'],
         default="move",
         type=str
     )
@@ -41,6 +41,14 @@ if __name__=="__main__":
             screen_height=config.SCREEN_HEIGHT,
             fire_sg=0.5,
             duration=0.7
+        )
+    if args.behavior=="scroll":
+        mouse = utils.mouse_behavior.Scroll(
+            border= int(config.SCREEN_HEIGHT/3),
+            screen_height=config.SCREEN_HEIGHT,
+            scroll_move=1,
+            fire_sg=0.05,
+            # duration=1.5
         )
     else:
         mouse = utils.mouse_behavior.MoveTo(
