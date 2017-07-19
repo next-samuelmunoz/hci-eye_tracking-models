@@ -54,7 +54,7 @@ def draw_features01(img, features):
 
 def loop(data_list):
     pygame.init()
-    i_data = 1000
+    i_data = 0
     exit = 0
     flag_dot = False
     flag_landmarks = False
