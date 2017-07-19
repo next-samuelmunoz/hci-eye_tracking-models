@@ -43,6 +43,13 @@ class Drag2Center():
                         duration = self.duration
                     )
                     self.mouse_pos = self.center_pos
+                    self._hide_mouse()
                     self.time_moved = now
         # x, y = mouse_pos
         # pyautogui.moveTo(x, y)  # TODO delete
+
+
+    def _hide_mouse(self):
+        """Put the cursor on a corner so it cannot be seen.
+        """
+        pyautogui.moveTo(0, self.screen_width)
