@@ -4,6 +4,7 @@ jupyter==1.0.0
 numpy==1.13.0
 pandas==0.20.2
 PyAutoGUI==0.9.36
+PyV4L2Camera==0.1a2
 pygame==1.9.3
 python-xlib==0.19
 scikit-image==0.13.0
