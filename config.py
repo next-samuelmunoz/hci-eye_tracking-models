@@ -53,6 +53,14 @@ THRESHOLD_FACE_WIDTH = 200  # Minimum face width
 
 
 #
+### MODELS
+#
+PATH_MODELS_TF = "data/models/tf/"
+PATH_MODELS_KERAS  = "data/models/keras/"
+
+
+
+#
 ### DATASET: raw
 #
 

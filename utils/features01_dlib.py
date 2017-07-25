@@ -12,6 +12,13 @@ EYE_BBOX_SCALE_HEIGHT = 1.7
 EYE_WIDTH = 30
 EYE_HEIGHT = 20
 
+# Features with predictive power
+FEATURES = [
+    'eye_right_x', 'eye_right_y', 'eye_right_width', 'eye_right_height',
+    'eye_left_x', 'eye_left_y', 'eye_left_width', 'eye_left_height',
+    'face_x', 'face_y', 'face_width', 'face_height'
+]
+TARGETS = ['x','y']
 
 def extract_eye(img, bbox_x, bbox_y, bbox_w, bbox_h):
     try:

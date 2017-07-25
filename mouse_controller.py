@@ -4,14 +4,13 @@ import os
 import time
 
 import numpy as np
-# from PIL import Image
-# import pyautogui
 import pygame
 from pygame.locals import *
 
 
 import config
-from utils.predictor import Predictor
+# from utils.predictor import Predictor
+from utils.keras.predictor import Predictor
 from utils.webcam_pyv4l2Camera import Webcam
 import utils.mouse_behavior
 
@@ -62,7 +61,7 @@ if __name__=="__main__":
         path_dlib_model=config.PATH_DLIB,
         # model_name='DSR-07',
         # model_name='CRD-02',
-        model_name='baseline-02',
+        model_name='baseline-08',
         # model_name='cnn_simple-09',
         # model_name='cnn-04',
         # model_name='cnn_maxpooling-02',

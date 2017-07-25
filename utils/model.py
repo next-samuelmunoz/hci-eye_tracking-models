@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow as tf
 
 from .data_model import get_batch
+from features01_dlib import FEATURES, TARGETS
 
 
 class Model:
@@ -13,21 +14,15 @@ class Model:
         self.model_name = model_name
         self.get_model = model
         self.IMG_SHAPE = (20,30)
-        self.FEATURES = [
-            'eye_right_x', 'eye_right_y', 'eye_right_width', 'eye_right_height',
-            'eye_left_x', 'eye_left_y', 'eye_left_width', 'eye_left_height',
-            'face_x', 'face_y', 'face_width', 'face_height'
-        ]
-        self.TARGETS = ['x','y']
         # Initialize
         self.graph = tf.Graph()
         with self.graph.as_default():
             self.sess = tf.Session(graph=self.graph)
             if saved_model!=False:
                 self.model_load(self.sess, saved_model)
-                _, _, _, self.t_labels, _ = self.get_placeholders(len(self.FEATURES), self.IMG_SHAPE, len(self.TARGETS))
+                _, _, _, self.t_labels, _ = self.get_placeholders(len(FEATURES), self.IMG_SHAPE, len(TARGETS))
             else:
-                self.t_features, self.t_imgs_left, self.t_imgs_right, self.t_labels, self.t_keep_prob = self.get_placeholders(len(self.FEATURES), self.IMG_SHAPE, len(self.TARGETS))
+                self.t_features, self.t_imgs_left, self.t_imgs_right, self.t_labels, self.t_keep_prob = self.get_placeholders(len(FEATURES), self.IMG_SHAPE, len(TARGETS))
                 tf.add_to_collection('features', self.t_features)
                 tf.add_to_collection('imgs_left', self.t_imgs_left)
                 tf.add_to_collection('imgs_right', self.t_imgs_right)
@@ -75,37 +70,37 @@ class Model:
                 for b_data, b_imgs_left, b_imgs_right in get_batch(train_data, train_imgs_left, train_imgs_right, batch_size):
                     steps += 1
                     self.sess.run(optimizer, feed_dict={
-                        self.t_features: b_data[self.FEATURES],
+                        self.t_features: b_data[FEATURES],
                         self.t_imgs_left: b_imgs_left,
                         self.t_imgs_right: b_imgs_right,
-                        self.t_labels: b_data[self.TARGETS],
+                        self.t_labels: b_data[TARGETS],
                         self.t_keep_prob: keep_prob
                     })
                     # Print Info
                     if steps % 20 == 0:
                         train_loss = self.loss.eval({
-                            self.t_features: b_data[self.FEATURES],
+                            self.t_features: b_data[FEATURES],
                             self.t_imgs_left: b_imgs_left,
                             self.t_imgs_right: b_imgs_right,
-                            self.t_labels: b_data[self.TARGETS],
+                            self.t_labels: b_data[TARGETS],
                             self.t_keep_prob: 1.0
                         }, session=self.sess)
                         losses_train.append(train_loss)
                         validation_loss = self.loss.eval({
-                            self.t_features: validation_data[self.FEATURES],
+                            self.t_features: validation_data[FEATURES],
                             self.t_imgs_left: validation_imgs_left,
                             self.t_imgs_right: validation_imgs_right,
-                            self.t_labels:validation_data[self.TARGETS],
+                            self.t_labels:validation_data[TARGETS],
                             self.t_keep_prob: 1.0
 
                         }, session=self.sess)
                         print("\tTrain VS Validation: {} {}".format(train_loss, validation_loss))
                 #self.model_save(self.sess, self.model_name+"."+str(epoch).zfill(4))  # Save after each epoch
                 validation_loss = self.loss.eval({
-                    self.t_features: validation_data[self.FEATURES],
+                    self.t_features: validation_data[FEATURES],
                     self.t_imgs_left: validation_imgs_left,
                     self.t_imgs_right: validation_imgs_right,
-                    self.t_labels:validation_data[self.TARGETS],
+                    self.t_labels:validation_data[TARGETS],
                     self.t_keep_prob: 1.0
 
                 }, session=self.sess)
@@ -133,10 +128,10 @@ class Model:
 
     def test(self, test_data, test_imgs_left, test_imgs_right):
         test_loss = self.loss.eval({
-            self.t_features: test_data[self.FEATURES],
+            self.t_features: test_data[FEATURES],
             self.t_imgs_left: test_imgs_left,
             self.t_imgs_right: test_imgs_right,
-            self.t_labels: test_data[self.TARGETS],
+            self.t_labels: test_data[TARGETS],
             self.t_keep_prob: 1.0
         }, session=self.sess)
         return test_loss
@@ -152,7 +147,7 @@ class Model:
 
     def predict_record(self, record, img_left, img_right):
         return tuple(self.predict(
-            data=np.array([[record[x] for x in self.FEATURES]]),
+            data=np.array([[record[x] for x in FEATURES]]),
             imgs_left=img_left.reshape(1, *img_left.shape),
             imgs_right=img_right.reshape(1, *img_right.shape)
         )[0])

@@ -2,6 +2,7 @@
 """Eye tracker predictor
 """
 
+import config
 from .features_dlib import FeaturesDlib
 from .features01_dlib import dlib2features01, extract_eye
 from .model import Model
