@@ -10,8 +10,9 @@ from skimage import io
 
 import config
 from utils.data import Data
-from utils.predictor import Predictor
-from utils.features01_dlib import dlib2features01
+# from utils.predictor import Predictor
+from utils.keras.predictor import Predictor
+from utils.features02_dlib import dlib2features
 
 
 def get_img_id(game_id, timestamp):
@@ -19,7 +20,7 @@ def get_img_id(game_id, timestamp):
 
 predictor = Predictor(
     path_dlib_model=config.PATH_DLIB,
-    model_name='baseline-06',
+    model_name='f02_03-07',
     screen_width=config.SCREEN_WIDTH,
     screen_height=config.SCREEN_HEIGHT,
     webcam_width=config.WEBCAM_WIDTH,
@@ -54,7 +55,7 @@ def draw_features01(img, features):
 
 def loop(data_list):
     pygame.init()
-    i_data = 0
+    i_data = 500
     exit = 0
     flag_dot = False
     flag_landmarks = False
@@ -95,7 +96,7 @@ def loop(data_list):
         if flag_landmarks:  # Compute landmarks and show
             try:
                 f = predictor.dlib_model.extract_features(io.imread(data_list[i_data]['img_path']), -1)
-                landmarks = dlib2features01(f)
+                landmarks = dlib2features(f)
                 draw_features01(img, landmarks)
             except Exception as e:
                 print("[WARNING] Exception: {}".format(e))
@@ -106,6 +107,7 @@ def loop(data_list):
             pygame.draw.circle(screen, (255,0,0), (-data_list[i_data]['x']+data_list[i_data]['screen_width'],data_list[i_data]['y']), 25, 0)
         if flag_predictor: # show prediction
             try:
+                print("fails?")
                 x,y = predictor.predict(io.imread(data_list[i_data]['img_path']))
                 print("-> PREDICTION: {},{}".format(int(x),int(y)))
                 pygame.draw.circle(screen, (255,255,0), (-int(x)+config.SCREEN_WIDTH,int(y)), 40, 0)

@@ -8,7 +8,7 @@ import numpy as np
 import skimage
 from skimage.restoration import denoise_bilateral
 from skimage.util import random_noise
-from skimage.exposure import equalize_hist
+import skimage.filters
 
 
 def data_augmentation(img, transformations=[], mirrored=False):
@@ -50,11 +50,14 @@ def mirror(img):
     return np.fliplr(img.copy())
 
 
-def bilateral(img):
+def blur(img):
     """Apply bilateral filter
     """
     return skimage.util.img_as_ubyte(
-        denoise_bilateral(img, sigma_spatial=2, multichannel=True),
+        np.clip(
+            skimage.filters.gaussian(img,sigma=3.0, multichannel=True),
+            -1,1
+        ),
         force_copy=True
     )
 
@@ -62,14 +65,6 @@ def noise(img):
     """Add gaussian noise
     """
     return skimage.util.img_as_ubyte(
-        random_noise(img, mode='gaussian', var=0.01),
-        force_copy=True
-    )
-
-def equalize(img):
-    """Equalize histogram
-    """
-    return skimage.util.img_as_ubyte(
-        equalize_hist(img, nbins=256, mask=None),
+        random_noise(img, mode='gaussian', var=0.001),
         force_copy=True
     )

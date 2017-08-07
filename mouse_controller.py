@@ -61,7 +61,7 @@ if __name__=="__main__":
         path_dlib_model=config.PATH_DLIB,
         # model_name='DSR-07',
         # model_name='CRD-02',
-        model_name='baseline-08',
+        model_name='f02_baseline-11',
         # model_name='cnn_simple-09',
         # model_name='cnn-04',
         # model_name='cnn_maxpooling-02',
