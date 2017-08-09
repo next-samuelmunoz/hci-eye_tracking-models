@@ -14,7 +14,7 @@ import csv
 import os
 import dlib
 from skimage import io
-# import skimage.color
+import skimage.color
 import skimage.transform
 
 
@@ -27,6 +27,7 @@ class FeaturesDlib(object):
 
     def extract_features(self, img, threshold_face_width):
         retval = None
+        img = skimage.color.rgb2gray(img)
         faces = self.detector(img, 0)
         if faces:
             biggest_face = max(faces,key=lambda x:x.area())
@@ -49,36 +50,3 @@ class FeaturesDlib(object):
         else:
             raise Exception("No face detected")
         return retval
-
-
-
-if __name__=="__main__":
-    import config
-    from utils import Data
-
-    # Create destination path
-    if os.path.exists(config.PATH_DATA_DLIB):
-        print("Folder {} exists, no need to generate dataset.".format(config.PATH_DATA_DLIB))
-        exit()
-    os.makedirs(config.PATH_DATA_DLIB)
-    features = FeaturesDlib(config.PATH_DLIB_MODEL)
-    data = Data(config.PATH_DATA_RAW)
-    i = 0
-    with open(config.PATH_DATA_DLIB_CSV,'wb') as fd:
-        for datum in data.iterate():
-            img_path = datum['img_path']
-            img = io.imread(img_path)
-            f = features.extract_features(img)
-            if f == -1:  # No face
-                print("[WARNING] '{}' FACE NOT FOUND".format(img_path))
-            elif f == -2:  # No landmarks
-                print("[WARNING] '{}' LANDMARKS NOT FOUND".format(img_path))
-            else:  # Everything correct
-                f['img'] = '/'.join(img_path.split('/')[-2:])
-                if i==0:
-                    csv_writer = csv.DictWriter(fd, fieldnames=f.keys())
-                    csv_writer.writeheader()
-                if f:
-                    csv_writer.writerow(f)
-                i+=1
-                print(i)

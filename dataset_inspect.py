@@ -3,10 +3,12 @@
 """
 
 import csv
+import traceback
 
 import pygame
 from pygame.locals import *
-from skimage import io
+import skimage.io
+import skimage.color
 
 import config
 from utils.data import Data
@@ -20,7 +22,7 @@ def get_img_id(game_id, timestamp):
 
 predictor = Predictor(
     path_dlib_model=config.PATH_DLIB,
-    model_name='f02_03-07',
+    model_name='f025_baseline-02',
     screen_width=config.SCREEN_WIDTH,
     screen_height=config.SCREEN_HEIGHT,
     webcam_width=config.WEBCAM_WIDTH,
@@ -108,11 +110,16 @@ def loop(data_list):
         if flag_predictor: # show prediction
             try:
                 print("fails?")
-                x,y = predictor.predict(io.imread(data_list[i_data]['img_path']))
+                x,y = predictor.predict(
+                    skimage.color.rgb2gray(skimage.io.imread(
+                        data_list[i_data]['img_path']
+                    ))
+                )
                 print("-> PREDICTION: {},{}".format(int(x),int(y)))
                 pygame.draw.circle(screen, (255,255,0), (-int(x)+config.SCREEN_WIDTH,int(y)), 40, 0)
             except Exception as e:
                 print("[WARNING] Exception:{}".format(e))
+                traceback.print_exc()
         pygame.display.update()
         click = False
         while not click:

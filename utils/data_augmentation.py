@@ -9,6 +9,7 @@ import skimage
 from skimage.restoration import denoise_bilateral
 from skimage.util import random_noise
 import skimage.filters
+from skimage.filters import threshold_local
 
 
 def data_augmentation(img, transformations=[], mirrored=False):
@@ -53,18 +54,22 @@ def mirror(img):
 def blur(img):
     """Apply bilateral filter
     """
-    return skimage.util.img_as_ubyte(
-        np.clip(
-            skimage.filters.gaussian(img,sigma=3.0, multichannel=True),
-            -1,1
-        ),
-        force_copy=True
-    )
+    return np.clip(
+        skimage.filters.gaussian(img,sigma=3.0, multichannel=True),
+        -1,1
+    ).copy()
 
 def noise(img):
     """Add gaussian noise
     """
-    return skimage.util.img_as_ubyte(
-        random_noise(img, mode='gaussian', var=0.001),
-        force_copy=True
-    )
+    return random_noise(img, mode='gaussian', var=0.001).copy()
+
+def saltnpepper(img):
+    """Add gaussian noise
+    """
+    return random_noise(img, mode='s&p', amount=0.05).copy()
+
+def threshold(img):
+    """Add gaussian noise
+    """
+    return threshold_local(img, block_size=5, method='gaussian', offset=0, mode='reflect', param=None).copy()

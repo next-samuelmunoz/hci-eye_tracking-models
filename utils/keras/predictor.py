@@ -4,6 +4,7 @@
 
 from tensorflow.contrib import keras
 import numpy as np
+import skimage.util
 
 import config
 from utils.features_dlib import FeaturesDlib
@@ -40,7 +41,10 @@ class Predictor:
 
     def _img2features(self, img):
         # Detect Landmarks
-        f = self.dlib_model.extract_features(img, self.THRESHOLD_FACE_WIDTH)
+        f = self.dlib_model.extract_features(
+            skimage.util.img_as_ubyte(img),
+            self.THRESHOLD_FACE_WIDTH
+        )
         landmarks = dlib2features(f)
         # Generate eye arrays
         eyes = {}
@@ -60,8 +64,6 @@ class Predictor:
         )
 
 
-
-
     def predict(self, img):
         try:
             left_img, right_img, features = self._img2features(img)
@@ -71,13 +73,16 @@ class Predictor:
                     'right_imgs': right_img,
                     'features': features
                 })[0]
+            # Rescale to screen coordinates
+            x,y = (x+1)/2*self.SCREEN_WIDTH, (y+1)/2*self.SCREEN_HEIGHT
+            # Bound prediction to limits
+            x = x if x>=0 else 0
+            x = x if x<=self.SCREEN_WIDTH else self.SCREEN_WIDTH
+            y = y if y>=0 else 0
+            y = y if y<=self.SCREEN_HEIGHT else self.SCREEN_HEIGHT
         except Exception as e:
             raise e
-        return(  # Rescale to screen coordinates
-            (x+1)/2*self.SCREEN_WIDTH,
-            (y+1)/2*self.SCREEN_HEIGHT,
-            # y*self.SCREEN_HEIGHT
-        )
+        return (x,y)
 
 
     def get_error(self, img, target):

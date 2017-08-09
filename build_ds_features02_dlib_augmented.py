@@ -6,8 +6,11 @@ import traceback
 import csv
 import hashlib
 import os
+import traceback
 
 from skimage import io
+import skimage.color
+import skimage.util
 
 import config
 from utils.data import Data
@@ -28,20 +31,25 @@ if __name__=="__main__":
     with open(config.PATH_DATA_FEATURES02_DLIB_AUGMENTED_CSV, 'w') as fd:
         for datum in data.iterate():
             img_path = datum['img_path']
-            img_original = io.imread(img_path)
+            img_original = skimage.color.rgb2gray(io.imread(img_path)) # Work with a grayscale img
             i_transform = 0
             # Data augmentation
             for (img, mirrored) in data_augmentation.data_augmentation(
                 img_original,
                 transformations=[  # Expensive operations first
                     data_augmentation.blur,
+                    data_augmentation.threshold,
+                    data_augmentation.saltnpepper,
                     data_augmentation.noise,
                     data_augmentation.mirror,
                 ]
             ):
                 print("IMG: {}\t\t Transformation: {}".format(i, i_transform))
                 try:
-                    f = features.extract_features(img, config.THRESHOLD_FACE_WIDTH)
+                    f = features.extract_features(
+                        skimage.util.img_as_ubyte(img),
+                        config.THRESHOLD_FACE_WIDTH
+                    )
                     f = dlib2features(f)
                     f.update(datum)
                     f['img'] = '/'.join(img_path.split('/')[-2:])
@@ -69,6 +77,6 @@ if __name__=="__main__":
                     csv_writer.writerow(f)
                 except Exception as e:
                     print("[WARNING] Exception: {}, Image: {}".format(e, img_path))
-                    print(mirrored)
+                    # traceback.print_exc()
                 i_transform += 1
             i+=1
